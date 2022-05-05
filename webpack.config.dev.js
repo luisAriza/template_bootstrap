@@ -1,10 +1,6 @@
 const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const TerserPlugin = require("terser-webpack-plugin");
 const CopyPlugin = require("copy-webpack-plugin");
-const { CleanWebpackPlugin } = require("clean-webpack-plugin");
 
 module.exports = {
   entry: "./src/app/index.js",
@@ -12,10 +8,20 @@ module.exports = {
     path: path.join(__dirname, "dist/"),
     filename: "js/bundle.js",
   },
-  mode: "production",
-  optimization: {
-    minimize: true,
-    minimizer: [new CssMinimizerPlugin(), new TerserPlugin()],
+  mode: "development",
+  devServer: {
+    static: {
+      directory: path.join(__dirname, "dist/"),
+    },
+    compress: true,
+    port: 8090,
+  },
+  resolve: {
+    extensions: [".js"],
+    // alias: {
+    //   "@components": path.resolve(__dirname, "src/components"),
+    //   "@style": path.resolve(__dirname, "src/sass"),
+    // },
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -31,16 +37,12 @@ module.exports = {
         },
       ],
     }),
-    new MiniCssExtractPlugin({
-      filename: "style/main.min.css",
-    }),
-    new CleanWebpackPlugin(),
   ],
   module: {
     rules: [
       {
         test: /\.(sc|sa|c)ss$/i,
-        use: [MiniCssExtractPlugin.loader, "css-loader", "sass-loader"],
+        use: ["style-loader", "css-loader", "sass-loader"],
       },
     ],
   },
